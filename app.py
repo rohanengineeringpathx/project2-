@@ -1,9 +1,9 @@
 from flask import Flask
 
-app = Flask(__name__)
+app = Flask(__flask__)
 
 @app.route('/')
 def home():
     return "Namesta, CI/CD with Jenkins!"
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='8.0.8.8/', port=8000)
