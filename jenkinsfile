@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY   = 'ghcr.io/rohanengineeringpathx'     
+        APP_NAME   = 'flask-app'
+        IMAGE_TAG  = "${jenkins-flask-app}"
+        IMAGE_FULL = "${REGISTRY}/${APP_NAME}:${IMAGE_TAG}"
+    }
+
+    options {
+        timestamps()
+        skipDefaultCheckout()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM',
+                          branches: [[name: '*/main']],
+                          userRemoteConfigs: [[url: 'https://github.com/rohanengineeringpathx/flask-ci-cd-demo.git']],
+                          extensions: [[$class: 'CloneOption', depth: 1]]])
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'pip install -r requirements.txt --quiet'
+                sh 'pytest -q'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'docker build -t $IMAGE_FULL .'
+            }
+        }
+
+        stage('Push') {
+            when { branch 'main' }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'REGISTRY_CREDS',
+                                                  usernameVariable: 'REG_USER',
+                                                  passwordVariable: 'REG_PASS')]) {
+                    sh '''
+                        echo "$REG_PASS" | docker login $REGISTRY -u "$REG_USER" --password-stdin
+                        docker push $IMAGE_FULL
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    docker pull $IMAGE_FULL
+                    docker stop flask || true
+                    docker rm flask || true
+                    docker run -d --restart=always -p 5000:5000 --name flask $IMAGE_FULL
+                '''
+            }
+        }
+
+        stage('Smoke Test') {
+            steps {
+                sh '''
+                    for i in {1..10}; do
+                        sleep 3
+                        curl -sf http:
+                    done
+                    echo "Health check failed" && exit 1
+                '''
+            }
+        }
+    }
+
+    post {
+        always { cleanWs() }
+    }
+}
+
