@@ -40,7 +40,7 @@ Make sure you have Python installed, then:
 C:\Users\daksh> pip install -r requirements.txt
 
 
-Now visit: [http://localhost:5000](http://localhost:5000)
+Now visit:  ([http://localhost:8088/])
 
 ---
 
@@ -74,15 +74,14 @@ No more manual deployments! 🚀
 
 You can push to:
 
-- Docker Hub (`docker.io/yourname`)
-- GitHub Container Registry (`ghcr.io/yourname`)
+- Docker Hub (`docker.io/`)
+- GitHub Container Registry (ghcr.io/rohanengineeringpathx)
 
-Just add your credentials in Jenkins under `REGISTRY_CREDS`.
+
 
 ---
 
 ## 🧠 Health Check Route
-
 Use this route to confirm the app is running:
 
 ```http
