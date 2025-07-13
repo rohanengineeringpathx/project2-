@@ -5,7 +5,7 @@ pipeline {
         REGISTRY   = 'ghcr.io/rohanengineeringpathx'     
         APP_NAME   = 'flask-app'
         IMAGE_TAG  = "${jenkins-flask-app}"
-        IMAGE_FULL = "${REGISTRY}/${APP_NAME}:${IMAGE_TAG}"
+        IMAGE_FULL = "$ghcr.io/rohanengineeringpathx/${flask-app}:$jenkins-flask-app"
     }
 
     options {
